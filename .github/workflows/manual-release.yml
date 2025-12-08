@@ -14,7 +14,7 @@ on:
 jobs:
   create-release:
     runs-on:
-      group: organization/mygit-runner-linux 
+      group: organization/Default
 
     steps:
       - name: Create release
