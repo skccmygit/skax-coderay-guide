@@ -13,7 +13,8 @@ on:
 
 jobs:
   create-release:
-    runs-on: ubuntu-latest
+    runs-on:
+      group: organization/mygit-runner-linux 
 
     steps:
       - name: Create release
