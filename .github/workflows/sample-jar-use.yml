@@ -1,26 +1,27 @@
-name: "[Docker] Run Only Test"
+name: "[코드레이] Jar Run Only 샘플"
 
 on:
   workflow_dispatch:   # 수동 실행
-
 
 jobs:
   sast-success:
     runs-on:
       group: organization/mygit-runner-linux 
     steps:
-      - name: Download Coderay JAR File
+      - name: Coderay 최신 JAR 다운로드
         run: |
           curl -L \
             -o coderay-open-api.jar \
             https://github.com/skccmygit/skax-coderay-guide/releases/download/latest/coderay-open-api.jar
-      - name: Run jar
+      - name: Coderay SAST 실행
         run: |
           java -jar /app/coderay-open-api.jar \
+            --SERVICE_NAME=${{ vars.CODERAY_SERVICE_NAME }} \
             --ACCESS_KEY=${{ vars.CODERAY_ACCESS_KEY }} \
             --SECRET_KEY=${{ vars.CODERAY_SECRET_KEY }} \
-            --PC_CODE=${{ vars.CODERAY_PC_CODE }} \
             --ACC_CODE=${{ vars.CODERAY_ACC_CODE }} \
-            --REV=refs/heads/${{ github.event.inputs.environment || github.ref_name }} \
+            --PC_CODE=${{ vars.CODERAY_PC_CODE }} \
             --SRC_URL=${{ vars.CODERAY_SRC_URL }} \
-            --SERVICE_NAME=${{ vars.CODERAY_SERVICE_NAME }}
+            --REV=refs/heads/${{ github.event.inputs.environment || github.ref_name }} \
+            
+
