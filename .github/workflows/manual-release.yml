@@ -58,33 +58,55 @@ jobs:
           echo "JAR files verified successfully"
         shell: bash
 
-      # 4. 파일명 변경 (latest 파일을 구분하기 위해)
-      - name: Prepare release files
-        run: |
-          # 버전별 파일은 그대로 사용
-          mkdir -p ./release-temp/${{ steps.version.outputs.version }}
-          cp ./artifacts/${{ steps.version.outputs.version }}/coderay-open-api.jar ./release-temp/${{ steps.version.outputs.version }}/coderay-open-api-${{ steps.version.outputs.version }}.jar
-          mkdir -p ./release-temp/latest
-          cp ./artifacts/latest/coderay-open-api.jar ./release-temp/latest/coderay-open-api.jar
-        shell: bash
-
-      # 5. 릴리즈 생성 및 JAR 업로드
-      - name: Create Release and Upload JAR files
+      # 4. 버전별 릴리즈 생성
+      - name: Create Version Release
         uses: softprops/action-gh-release@v1
         with:
           tag_name: ${{ steps.version.outputs.version }}
           name: ${{ inputs.title || steps.version.outputs.version }}
           draft: false
           prerelease: false
-          files: |
-            ./release-temp/${{ steps.version.outputs.version }}/coderay-open-api-${{ steps.version.outputs.version }}.jar
-            ./release-temp/latest/coderay-open-api.jar
+          files: ./artifacts/${{ steps.version.outputs.version }}/coderay-open-api.jar
           body: |
             ## 📦 Release ${{ steps.version.outputs.version }}
             
             ### 다운로드
             - Latest: [coderay-open-api.jar](https://github.com/${{ github.repository }}/releases/download/latest/coderay-open-api.jar)
-            - 버전별: [coderay-open-api.jar](https://github.com/${{ github.repository }}/releases/download/${{ steps.version.outputs.version }}/coderay-open-api-${{ steps.version.outputs.version }}.jar)
+            - 이 버전: [coderay-open-api.jar](https://github.com/${{ github.repository }}/releases/download/${{ steps.version.outputs.version }}/coderay-open-api.jar)
                         
             ### 변경사항
             ${{ inputs.title || 'Release ' }}${{ steps.version.outputs.version }}
+
+      # 5. latest 태그 삭제 및 재생성
+      - name: Delete and recreate latest tag
+        run: |
+          # 로컬 latest 태그 삭제 (있을 경우)
+          git tag -d latest || true
+          # 원격 latest 태그 삭제 (있을 경우)
+          git push origin :refs/tags/latest || true
+          # 새로운 latest 태그 생성
+          git tag -f latest
+          # latest 태그 푸시
+          git push origin latest --force
+        shell: bash
+
+      # 6. latest 릴리즈 생성/업데이트
+      - name: Create/Update Latest Release
+        uses: softprops/action-gh-release@v1
+        with:
+          tag_name: latest
+          name: Latest Release
+          draft: false
+          prerelease: false
+          files: ./artifacts/latest/coderay-open-api.jar
+          body: |
+            ## 📦 Latest Release
+            
+            현재 최신 버전: **${{ steps.version.outputs.version }}**
+            
+            ### 다운로드
+            - [coderay-open-api.jar](https://github.com/${{ github.repository }}/releases/download/latest/coderay-open-api.jar)
+            
+            ### 안내
+            항상 최신 버전을 사용하려면 위 링크를 사용하세요.
+            특정 버전이 필요하면 [Releases 페이지](https://github.com/${{ github.repository }}/releases)에서 해당 버전을 다운로드하세요.
