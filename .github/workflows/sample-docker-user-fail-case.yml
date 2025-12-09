@@ -21,6 +21,7 @@ jobs:
             -e ACC_CODE=${{ vars.CODERAY_ACC_CODE }} \
             -e SRC_URL=${{ vars.CODERAY_SRC_URL }} \
             -e REV=refs/heads/${{ github.event.inputs.environment || github.ref_name }} \
+            -e MIDDLE_ALLOW=y \
             ${{ vars.CODERAY_IMAGE_NAME }}
           echo "Coderay 상세 결과는 https://skax.coderay.co.kr:28443 에서 확인하세요"
       
