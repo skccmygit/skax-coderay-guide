@@ -1,4 +1,4 @@
-name: "[코드레이] Docker Run Only 샘플"
+name: "[코드레이] Docker Run Only 실패케이스 샘플"
 
 on:
   workflow_dispatch:   # 수동 실행
