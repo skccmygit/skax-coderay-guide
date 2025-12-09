@@ -1,5 +1,5 @@
 # .github/workflows/manual-release.yml
-name: Create Empty Release
+name: Create Release with JAR
 
 on:
   workflow_dispatch:
@@ -13,8 +13,6 @@ on:
   push:
     tags:
       - 'v*'          # v1.0.0, v1.0.1 같은 태그에 반응
-  release:
-    types: [published]
 
 permissions:
   contents: write
@@ -29,23 +27,54 @@ jobs:
       # 1. 소스 체크아웃
       - name: Checkout
         uses: actions/checkout@v4
+        with:
+          fetch-depth: 0  # 태그 정보를 가져오기 위해 전체 히스토리 fetch
 
-      # 2. Upload Release latest Asset
-      - name: Upload Release latest Asset
-        if: github.event_name == 'release' || (github.event_name == 'push' && startsWith(github.ref, 'refs/tags/'))
+      # 2. 버전 추출 (태그 push 또는 수동 실행 모두 지원)
+      - name: Extract version
+        id: version
+        run: |
+          if [ "${{ github.event_name }}" == "workflow_dispatch" ]; then
+            VERSION="${{ inputs.version }}"
+          else
+            # refs/tags/v1.0.0 -> v1.0.0
+            VERSION="${GITHUB_REF#refs/tags/}"
+          fi
+          echo "version=$VERSION" >> $GITHUB_OUTPUT
+          echo "Release version: $VERSION"
+        shell: bash
+
+      # 3. JAR 파일 존재 확인
+      - name: Verify JAR files
+        run: |
+          if [ ! -f "./artifacts/${{ steps.version.outputs.version }}/coderay-open-api.jar" ]; then
+            echo "Error: JAR file not found at ./artifacts/${{ steps.version.outputs.version }}/coderay-open-api.jar"
+            exit 1
+          fi
+          if [ ! -f "./artifacts/latest/coderay-open-api.jar" ]; then
+            echo "Error: JAR file not found at ./artifacts/latest/coderay-open-api.jar"
+            exit 1
+          fi
+          echo "JAR files verified successfully"
+        shell: bash
+
+      # 4. 릴리즈 생성 및 버전별 JAR 업로드
+      - name: Create Release and Upload Version JAR
         uses: softprops/action-gh-release@v1
         with:
+          tag_name: ${{ steps.version.outputs.version }}
+          name: ${{ inputs.title || steps.version.outputs.version }}
+          draft: false
+          prerelease: false
           files: |
-            ./artifacts/latest/coderay-open-api.jar  
-          name: latest
-          draft: true
-      
-      # 3. Upload Release version Asset
-      - name: Upload Release version Asset
-        uses: softprops/action-gh-release@v1
-        with:
-          files: |
-            ./artifacts/${{ inputs.version }}/coderay-open-api.jar  
-          tag_name: ${{ inputs.version }}
-          name: ${{ inputs.title || inputs.version }}
-          draft: true
+            ./artifacts/${{ steps.version.outputs.version }}/coderay-open-api.jar
+            ./artifacts/latest/coderay-open-api.jar
+          body: |
+            ## 📦 Release ${{ steps.version.outputs.version }}
+            
+            ### 다운로드
+            - 버전별: [coderay-open-api.jar](https://github.com/${{ github.repository }}/releases/download/${{ steps.version.outputs.version }}/coderay-open-api.jar)
+            - Latest: [coderay-open-api.jar (latest)](https://github.com/${{ github.repository }}/releases/download/${{ steps.version.outputs.version }}/coderay-open-api.jar)
+            
+            ### 변경사항
+            ${{ inputs.title || 'Release ' }}${{ steps.version.outputs.version }}
