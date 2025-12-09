@@ -29,7 +29,7 @@ jobs:
       # 1. 소스 체크아웃
       - name: Checkout
         uses: actions/checkout@v4
-        
+
       # 2. Upload Release latest Asset
       - name: Upload Release latest Asset
         if: github.event_name == 'release' || (github.event_name == 'push' && startsWith(github.ref, 'refs/tags/'))
@@ -39,6 +39,7 @@ jobs:
             artifacts/latest/coderay-open-api.jar  
           tag_name: ${{ github.ref_name }}
           name: ${{ github.ref_name }}
+          draft: true
       
       # 3. Upload Release version Asset
       - name: Create release
