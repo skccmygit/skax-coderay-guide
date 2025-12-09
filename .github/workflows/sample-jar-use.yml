@@ -6,7 +6,7 @@ on:
 jobs:
   sast-success:
     runs-on:
-      group: organization/mygit-runner-linux 
+      group: organization/mygit-runner-linux
     steps:
       - name: Coderay 최신 JAR 다운로드
         run: |
