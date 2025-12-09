@@ -11,8 +11,7 @@ jobs:
       - name: Coderay 최신 JAR 다운로드
         run: |
           curl -L \
-            -H "Accept: application/octet-stream" \
-            -o coderay-open-api.jar \
+            -O \
             https://github.com/skccmygit/skax-coderay-guide/releases/download/latest/coderay-open-api.jar
           
           # 다운로드 확인
