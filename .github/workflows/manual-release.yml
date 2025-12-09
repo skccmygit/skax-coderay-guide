@@ -36,17 +36,16 @@ jobs:
         uses: softprops/action-gh-release@v1
         with:
           files: |
-            artifacts/latest/coderay-open-api.jar  
-          tag_name: ${{ github.ref_name }}
-          name: ${{ github.ref_name }}
+            ./artifacts/latest/coderay-open-api.jar  
+          name: latest
           draft: true
       
       # 3. Upload Release version Asset
-      - name: Create release
+      - name: Upload Release version Asset
         uses: softprops/action-gh-release@v1
         with:
           files: |
-            artifacts/${{ inputs.version }}/coderay-open-api.jar  
+            ./artifacts/${{ inputs.version }}/coderay-open-api.jar  
           tag_name: ${{ inputs.version }}
           name: ${{ inputs.title || inputs.version }}
           draft: true
