@@ -63,7 +63,7 @@ jobs:
         run: |
           # 버전별 파일은 그대로 사용
           mkdir -p ./release-temp/${{ steps.version.outputs.version }}
-          cp ./artifacts/${{ steps.version.outputs.version }}/coderay-open-api.jar ./release-temp/${{ steps.version.outputs.version }}/coderay-open-api.jar
+          cp ./artifacts/${{ steps.version.outputs.version }}/coderay-open-api.jar ./release-temp/${{ steps.version.outputs.version }}/coderay-open-api-${{ steps.version.outputs.version }}.jar
           mkdir -p ./release-temp/latest
           cp ./artifacts/latest/coderay-open-api.jar ./release-temp/latest/coderay-open-api.jar
         shell: bash
@@ -77,14 +77,14 @@ jobs:
           draft: false
           prerelease: false
           files: |
-            ./release-temp/${{ steps.version.outputs.version }}/coderay-open-api.jar
+            ./release-temp/${{ steps.version.outputs.version }}/coderay-open-api-${{ steps.version.outputs.version }}.jar
             ./release-temp/latest/coderay-open-api.jar
           body: |
             ## 📦 Release ${{ steps.version.outputs.version }}
             
             ### 다운로드
-            - 버전별: [coderay-open-api.jar](https://github.com/${{ github.repository }}/releases/download/${{ steps.version.outputs.version }}/coderay-open-api.jar)
             - Latest: [coderay-open-api.jar](https://github.com/${{ github.repository }}/releases/download/latest/coderay-open-api.jar)
-            
+            - 버전별: [coderay-open-api.jar](https://github.com/${{ github.repository }}/releases/download/${{ steps.version.outputs.version }}/coderay-open-api-${{ steps.version.outputs.version }}.jar)
+                        
             ### 변경사항
             ${{ inputs.title || 'Release ' }}${{ steps.version.outputs.version }}
