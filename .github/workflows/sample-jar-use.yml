@@ -4,7 +4,7 @@ on:
   workflow_dispatch:   # 수동 실행
 
 jobs:
-  sast-success:
+  coderay-run:
     runs-on:
       group: organization/mygit-runner-linux
     steps:
@@ -13,27 +13,6 @@ jobs:
           curl -L \
             -O \
             https://github.com/skccmygit/skax-coderay-guide/releases/download/latest/coderay-open-api.jar
-          
-          # 다운로드 확인
-          echo "=== 다운로드된 파일 정보 ==="
-          ls -lh coderay-open-api.jar
-          file coderay-open-api.jar
-          
-          # JAR 파일 유효성 검증
-          if [ ! -s coderay-open-api.jar ]; then
-            echo "Error: JAR 파일이 비어있거나 다운로드되지 않았습니다."
-            exit 1
-          fi
-          
-          # JAR 파일 구조 확인
-          jar tf coderay-open-api.jar > /dev/null 2>&1 || {
-            echo "Error: 유효하지 않은 JAR 파일입니다."
-            echo "파일 내용 (처음 100바이트):"
-            head -c 100 coderay-open-api.jar
-            exit 1
-          }
-          
-          echo "JAR 파일 다운로드 및 검증 완료"
           
       - name: Coderay SAST 실행
         run: |
@@ -45,5 +24,10 @@ jobs:
             --PC_CODE=${{ vars.CODERAY_PC_CODE }} \
             --SRC_URL=${{ vars.CODERAY_SRC_URL }} \
             --REV=refs/heads/${{ github.event.inputs.environment || github.ref_name }} \
+
+      - name: Coderay SAST 실행후
+        run: |
+          echo "Coderay 실행 완료"
+        shell: bash
             
 
