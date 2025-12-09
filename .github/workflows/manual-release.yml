@@ -9,19 +9,43 @@ on:
         required: true
       title:
         description: "Release title"
-        required: false
+        required: false  
+  push:
+    tags:
+      - 'v*'          # v1.0.0, v1.0.1 같은 태그에 반응
+  release:
+    types: [published]
+
+permissions:
+  contents: write
+  packages: write
 
 jobs:
   create-release:
     runs-on:
-      group: organization/Default
+      group: organization/mygit-runner-linux
 
     steps:
+      # 1. 소스 체크아웃
+      - name: Checkout
+        uses: actions/checkout@v4
+        
+      # 2. Upload Release latest Asset
+      - name: Upload Release latest Asset
+        if: github.event_name == 'release' || (github.event_name == 'push' && startsWith(github.ref, 'refs/tags/'))
+        uses: softprops/action-gh-release@v1
+        with:
+          files: |
+            artifacts/latest/coderay-open-api.jar  
+          tag_name: ${{ github.ref_name }}
+          name: ${{ github.ref_name }}
+      
+      # 3. Upload Release version Asset
       - name: Create release
         uses: softprops/action-gh-release@v1
         with:
+          files: |
+            artifacts/${{ inputs.version }}/coderay-open-api.jar  
           tag_name: ${{ inputs.version }}
           name: ${{ inputs.title || inputs.version }}
           draft: true
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
