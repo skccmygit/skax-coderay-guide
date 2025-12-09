@@ -1,0 +1,24 @@
+name: "[코드레이] Docker Run Only 샘플"
+
+on:
+  workflow_dispatch:   # 수동 실행
+
+jobs:
+  sast-success:
+    runs-on:
+      group: organization/mygit-runner-linux
+    steps:
+      - name: Docker Pull
+        run: docker pull ${{ vars.CODERAY_IMAGE_NAME }}
+      - name: Run Container
+        run: |
+          docker run --rm \
+            --name coderay-open-api \
+            -e SERVICE_NAME=${{ vars.CODERAY_SERVICE_NAME }} \
+            -e ACCESS_KEY=${{ vars.CODERAY_ACCESS_KEY }} \
+            -e SECRET_KEY=${{ vars.CODERAY_SECRET_KEY }} \
+            -e PC_CODE=${{ vars.CODERAY_PC_CODE }} \
+            -e ACC_CODE=${{ vars.CODERAY_ACC_CODE }} \
+            -e SRC_URL=${{ vars.CODERAY_SRC_URL }} \
+            -e REV=refs/heads/${{ github.event.inputs.environment || github.ref_name }} \
+            ${{ vars.CODERAY_IMAGE_NAME }}

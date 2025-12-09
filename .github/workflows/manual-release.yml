@@ -1,5 +1,5 @@
 # .github/workflows/manual-release.yml
-name: 릴리즈 생성 (JAR파일 포함)
+name: [릴리즈] 생성 (JAR 파일 갱신)
 
 on:
   workflow_dispatch:
