@@ -1,5 +1,5 @@
 # .github/workflows/manual-release.yml
-name: Create Release with JAR
+name: 릴리즈 생성 (JAR파일 포함)
 
 on:
   workflow_dispatch:
@@ -74,7 +74,7 @@ jobs:
             
             ### 다운로드
             - 버전별: [coderay-open-api.jar](https://github.com/${{ github.repository }}/releases/download/${{ steps.version.outputs.version }}/coderay-open-api.jar)
-            - Latest: [coderay-open-api.jar (latest)](https://github.com/${{ github.repository }}/releases/download/${{ steps.version.outputs.version }}/coderay-open-api.jar)
+            - Latest: [coderay-open-api.jar (latest)](https://github.com/${{ github.repository }}/releases/download/latest/coderay-open-api.jar)
             
             ### 변경사항
             ${{ inputs.title || 'Release ' }}${{ steps.version.outputs.version }}
