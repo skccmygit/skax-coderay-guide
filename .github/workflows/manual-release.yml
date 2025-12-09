@@ -58,8 +58,17 @@ jobs:
           echo "JAR files verified successfully"
         shell: bash
 
-      # 4. 릴리즈 생성 및 버전별 JAR 업로드
-      - name: Create Release and Upload Version JAR
+      # 4. 파일명 변경 (latest 파일을 구분하기 위해)
+      - name: Prepare release files
+        run: |
+          # 버전별 파일은 그대로 사용
+          mkdir -p ./release-temp
+          cp ./artifacts/${{ steps.version.outputs.version }}/coderay-open-api.jar ./release-temp/coderay-open-api-${{ steps.version.outputs.version }}.jar
+          cp ./artifacts/latest/coderay-open-api.jar ./release-temp/coderay-open-api-latest.jar
+        shell: bash
+
+      # 5. 릴리즈 생성 및 JAR 업로드
+      - name: Create Release and Upload JAR files
         uses: softprops/action-gh-release@v1
         with:
           tag_name: ${{ steps.version.outputs.version }}
@@ -67,14 +76,14 @@ jobs:
           draft: false
           prerelease: false
           files: |
-            ./artifacts/${{ steps.version.outputs.version }}/coderay-open-api.jar
-            ./artifacts/latest/coderay-open-api.jar
+            ./release-temp/coderay-open-api-${{ steps.version.outputs.version }}.jar
+            ./release-temp/coderay-open-api-latest.jar
           body: |
             ## 📦 Release ${{ steps.version.outputs.version }}
             
             ### 다운로드
-            - 버전별: [coderay-open-api.jar](https://github.com/${{ github.repository }}/releases/download/${{ steps.version.outputs.version }}/coderay-open-api.jar)
-            - Latest: [coderay-open-api.jar (latest)](https://github.com/${{ github.repository }}/releases/download/latest/coderay-open-api.jar)
+            - 버전별: [coderay-open-api-${{ steps.version.outputs.version }}.jar](https://github.com/${{ github.repository }}/releases/download/${{ steps.version.outputs.version }}/coderay-open-api-${{ steps.version.outputs.version }}.jar)
+            - Latest: [coderay-open-api-latest.jar](https://github.com/${{ github.repository }}/releases/download/${{ steps.version.outputs.version }}/coderay-open-api-latest.jar)
             
             ### 변경사항
             ${{ inputs.title || 'Release ' }}${{ steps.version.outputs.version }}
