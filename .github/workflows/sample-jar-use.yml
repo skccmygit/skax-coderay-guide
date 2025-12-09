@@ -11,8 +11,31 @@ jobs:
       - name: Coderay 최신 JAR 다운로드
         run: |
           curl -L \
+            -H "Accept: application/octet-stream" \
             -o coderay-open-api.jar \
             https://github.com/skccmygit/skax-coderay-guide/releases/download/latest/coderay-open-api.jar
+          
+          # 다운로드 확인
+          echo "=== 다운로드된 파일 정보 ==="
+          ls -lh coderay-open-api.jar
+          file coderay-open-api.jar
+          
+          # JAR 파일 유효성 검증
+          if [ ! -s coderay-open-api.jar ]; then
+            echo "Error: JAR 파일이 비어있거나 다운로드되지 않았습니다."
+            exit 1
+          fi
+          
+          # JAR 파일 구조 확인
+          jar tf coderay-open-api.jar > /dev/null 2>&1 || {
+            echo "Error: 유효하지 않은 JAR 파일입니다."
+            echo "파일 내용 (처음 100바이트):"
+            head -c 100 coderay-open-api.jar
+            exit 1
+          }
+          
+          echo "JAR 파일 다운로드 및 검증 완료"
+          
       - name: Coderay SAST 실행
         run: |
           java -jar coderay-open-api.jar \
