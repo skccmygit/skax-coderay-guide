@@ -14,7 +14,7 @@ jobs:
             -O \
             https://github.com/skccmygit/skax-coderay-guide/releases/download/latest/coderay-open-api.jar
           
-      - name: Coderay SAST 실행
+      - name: Coderay 분석 요청
         run: |
           java -jar coderay-open-api.jar \
             --SERVICE_NAME=${{ vars.CODERAY_SERVICE_NAME }} \
