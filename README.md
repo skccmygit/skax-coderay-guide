@@ -105,11 +105,11 @@ Jar|<https://github.com/skccmygit/skax-coderay-guide/releases/download/latest/co
           run: |
             docker run --rm \
               --name coderay-open-api \
-              -e SERVICE_NAME=${{ vars.SERVICE_NAME }} \
-              -e ACCESS_KEY=${{ secrets.ACCESS_KEY }} \
-              -e SECRET_KEY=${{ secrets.SECRET_KEY }} \
-              -e PC_CODE=${{ vars.PC_CODE }} \
-              -e ACC_CODE=${{ vars.ACC_CODE }} \
+              -e SERVICE_NAME=${{ vars.CODERAY_SERVICE_NAME }} \
+              -e ACCESS_KEY=${{ vars.CODERAY_ACCESS_KEY }} \
+              -e SECRET_KEY=${{ vars.CODERAY_SECRET_KEY }} \
+              -e PC_CODE=${{ vars.CODERAY_PC_CODE }} \
+              -e ACC_CODE=${{ vars.CODERAY_ACC_CODE }} \
               -e SRC_URL=${{ github.server_url }}/${{ github.repository }} \
               -e REV=refs/heads/${{ github.event.inputs.environment || github.ref_name }} \
               ${{ vars.CODERAY_IMAGE_NAME }}
@@ -156,7 +156,7 @@ Jar|<https://github.com/skccmygit/skax-coderay-guide/releases/download/latest/co
               --SECRET_KEY=${{ vars.CODERAY_SECRET_KEY }} \
               --ACC_CODE=${{ vars.CODERAY_ACC_CODE }} \
               --PC_CODE=${{ vars.CODERAY_PC_CODE }} \
-              --SRC_URL=${{ vars.CODERAY_SRC_URL }} \
+              --SRC_URL=${{ github.server_url }}/${{ github.repository }} \
               --REV=refs/heads/${{ github.event.inputs.environment || github.ref_name }} \
             echo "Coderay 상세 결과는 https://skax.coderay.co.kr:28443 에서 확인하세요"
 
