@@ -72,7 +72,7 @@
 
 구분 | 주소
 --|--
-Docker Image|ghcr.io/skccmygit/coderay-openapi:latest
+Docker Image|ghcr.io/skccmygit/coderay-open-api:latest
 Jar|<https://github.com/skccmygit/skax-coderay-guide/releases/download/latest/coderay-open-api.jar>
   
 #### 4-1. `Docker Image` 이용 예제 (GitActions workflow 이용)
