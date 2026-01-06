@@ -111,7 +111,7 @@ Jar|<https://github.com/skccmygit/skax-coderay-guide/releases/download/latest/co
               -e PC_CODE=${{ vars.CODERAY_PC_CODE }} \
               -e ACC_CODE=${{ vars.CODERAY_ACC_CODE }} \
               -e SRC_URL=${{ github.server_url }}/${{ github.repository }} \
-              -e REV=refs/heads/${{ github.event.inputs.environment || github.ref_name }} \
+              -e REV=${{ github.event.inputs.environment || github.ref_name }} \
               ${{ vars.CODERAY_IMAGE_NAME }}
 
         - name: Deploy
@@ -183,7 +183,7 @@ Jar|<https://github.com/skccmygit/skax-coderay-guide/releases/download/latest/co
   | **PC_CODE** | **필수** | 코드레이 프로젝트 코드 | |
   | **ACC_CODE** | **필수** | 형상관리 인증 KEY | |
   | **SRC_URL** | **필수** | 소스저장소 URL | |
-  | **REV** | **필수** | `refs/heads/`+ **분석 대상 브랜치명** | |
+  | **REV** | **필수** | **분석 대상 브랜치명** | |
   | TIMEOUT_SECONDS | 옵션 | 코드레이 스캔 타임아웃 시간(초) | 600 |
   | SERVER_URL | 옵션 | 코드레이 Open API URL | <https://coderay.skax.co.kr:28443> |
   | SUB_MODULE | 옵션 | 분석시 서브모듈 포함 여부 | y |
