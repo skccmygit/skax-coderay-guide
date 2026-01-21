@@ -173,7 +173,9 @@ Jar|<https://github.com/skccmygit/skax-coderay-guide/releases/download/latest/co
 
 ## 참고사항
 
-- 도커이미지 또는 JAR에 사용되는 환경변수 설명
+### 도커이미지 또는 JAR에 사용되는 환경변수 설명
+
+- 옵션 파라미터 값에 대해서는 프로젝트별로 결정
 
   | 환경변수명 | 필수여부 | 설명 | 기본값 |
   |--------|--------|------|------|
@@ -202,3 +204,9 @@ Jar|<https://github.com/skccmygit/skax-coderay-guide/releases/download/latest/co
 
 - 코드레이 **최초 연동시**에는 분석시간이 오래 걸릴 수 있습니다.\
   최초 이후 분석의 경우 `증분대상`만 분석합니다.
+
+---
+
+## ZCP 환경에서의 코드레이 사용가이드
+
+- [ZCP_Coderay_연계_가이드.pdf](./ZCP_Coderay_연계_가이드.pdf)
