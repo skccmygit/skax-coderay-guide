@@ -64,7 +64,7 @@
 > 방화벽 작업이 필요합니다.
 
 - AWS 환경에서의 코드레이 호출 흐름
-    ![aws-codebuild-flow](./images/aws-codebuild-flow.png)
+    ![aws-codebuild-flow](../images/aws-codebuild-flow.png)
 - 방화벽 관련 정책
   1. **Codebuild에서 Github 소스저장소 접근**\
      AWS Codebuild의 IP가 변경되기 때문에 IP를 하나하나 등록하기 어려움\
@@ -86,7 +86,7 @@
 
 - Git Actions 환경에서의 코드레이 호출 흐름
   - 조직별 allow IP 정책으로 인하여 다소 복잡할수 있음
-   ![git action](./images/git-action-runner.png)
+   ![git action](../images/git-action-runner.png)
   - Enterprise Runner의 경우 코드레이 호출전용임\
    예를들면 코드레이 점검용 workflow만 만들수도 있음
 
@@ -95,7 +95,7 @@
 > 코드레이의 경우 아래 그림과 같이 `2가지 방법`으로 소스 분석을 진행할 수 있음. \
 > DevSecOps 구축 전까지는 1년에 한번정도 **수동으로 소스를 업로드** 하여 점검 진행
 >
-![coderay](./images/coderay.png)
+![coderay](../images/coderay.png)
 
 - 수동 업로드
   - 사내망(?)에서는 [코드레이 사이트](https://coderay.skax.co.kr:28443) 접근 가능 
@@ -107,7 +107,7 @@
       또한, **Gtihub Allow IP 정책이 활성화** 되어 있을 경우 **코드레이서버 아이피를 등록**해야 함
     - AWS Codecommit의 경우 Direct Connection을 통하여 접근하였음 \
       /etc/hosts에 NAT IP 코드커밋도메인 등록
-      ![aws-dx](./images/aws-dx.png)
+      ![aws-dx](../images/aws-dx.png)
 
 - 코드레이는 `증분스캔` 기능이 존재 함 \
   해당 기능의 경우 이전 분석이력에서 변경된 부분만 분석하기 때문에 시간이 적게 소비 됨 \
