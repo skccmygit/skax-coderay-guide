@@ -8,11 +8,11 @@
 ## 사전 준비 작업
 
 - [X] **코드레이 접속 계정** (<https://coderay.skax.co.kr:28443>)
-- [X] **코드레이 `형상관리 인증 KEY`**
-- [X] **코드레이 Open API `ACCESS 및 SECRET KEY`**
-- [X] **코드레이 `프로젝트 코드` 정보**
-- [X] **빌드플랫폼 → 코드레이 서버 방화벽해제**
-- [X] **코드레이 서버 → 소스저장소 방화벽해제**
+- [X] **코드레이 Open API ACCESS 및 SECRET KEY** ☞ `ACCESS_KEY, SECRET_KEY`
+- [X] **코드레이 형상관리 인증 KEY** ☞ `ACC_CODE`
+- [X] **코드레이 프로젝트 코드 정보** ☞ `PC_CODE`
+- [X] **빌드플랫폼 → 코드레이 서버 방화벽해제** (skax-coderay runner 사용시 방화벽 작업 기완료)
+- [X] **코드레이 서버 → 소스저장소 방화벽해제** (사내표준 저장소 사용시 방화벽 작업 기완료)
 
 ※ 코드레이 계정 및 프로젝트 존재하지 않을 경우 신청 필요
 
@@ -28,6 +28,7 @@
   ![코드레이 연동관리 추가](./images/coderay_1_set_2.png)
 - **인증이름, 아이디, 토큰 입력**\
   ![인증 정보 입력](./images/coderay_1_set_3.png)
+  (형상관리 인증 정보에서 개인 계정의 토큰 사용시, 토큰 만료기간 주의 요망!)
 - **생성된 인증정보의 `새로고침` 클릭**\
   ![새로고침 클릭](./images/coderay_2_con_test_1.png)
 - **GIT 접속 URL 입력 후 `접속 테스트` 클릭**\
@@ -80,15 +81,39 @@ Jar|<https://github.com/skccmygit/skax-coderay-guide/releases/download/latest/co
 > 기존의 workflow.yml 파일 내용에서 `Coderay 분석 단계`만 추가하면 됩니다. \
 > Github Actions **variable 및 secret**을 이용한 예제입니다. \
 > workflow 구성은 각 프로젝트에 맞게 만들면 됩니다. (Job 또는 Step 구성)
+> 아래는 build > SAST > deploy 작업 구성으로 호출한 샘플 입니다.
+> deploy 작업 수행시에는 선행작업 완료여부를 확인하기 위하여 needs: [build, SAST_codeay]를 사용해야 합니다.
 
-- 아래는 Step 구성으로 호출한 샘플 입니다.
-- 체크아웃-빌드-**코드레이도커이미지풀-코드레이분석**-배포
+
+- [빌드-**SAST(코드레이 호출작업)**-배포 workflow 샘플](https://github.com/skccmygit/skax-coderay-guide/blob/main/.github/workflows/coderay-sample.yml)
 
   ```yml
+  env:
+    SERVICE_NAME: GithubActions
+    PC_CODE: ${{ vars.CODERAY_PC_CODE }}
+    ACC_CODE: ${{ vars.CODERAY_ACC_CODE }}
+    ACCESS_KEY: ${{ secrets.CODERAY_ACCESS_KEY }}   
+    SECRET_KEY: ${{ secrets.CODERAY_SECRET_KEY }} 
+    CODERAY_IMAGE_PATH: ${{ vars.CODERAY_IMAGE_PATH }}
+
   jobs:
+    # define your build job
     build:
       runs-on:
-        group: organization/internal-runner-linux
+        group: default
+      steps:
+        - name: Checkout
+          uses: actions/checkout@v3
+
+        - name: Build
+          run: |
+            echo "===== Build Stage ====="
+            echo "빌드 수행 로직을 여기에 ...."
+
+    # Do not modify below this this job        
+    SAST_coderay:
+      runs-on:
+        group: skax-coderay
       steps:
         - name: Checkout
           uses: actions/checkout@v3
@@ -98,72 +123,31 @@ Jar|<https://github.com/skccmygit/skax-coderay-guide/releases/download/latest/co
             echo "===== Build Stage ====="
             echo "빌드 수행"
         
-        - name: 코드레이 Docker Image Pull
-          run: docker pull ${{ vars.CODERAY_IMAGE_NAME }}
-
-        - name: 코드레이 분석 요청
+        - name: Coderay Docker Image Pull
+          run: docker pull ${{ env.CODERAY_IMAGE_PATH }}
+        - name: Coderay Scan
           run: |
             docker run --rm \
-              --name coderay-open-api \
-              -e SERVICE_NAME=${{ vars.CODERAY_SERVICE_NAME }} \
-              -e ACCESS_KEY=${{ vars.CODERAY_ACCESS_KEY }} \
-              -e SECRET_KEY=${{ vars.CODERAY_SECRET_KEY }} \
-              -e PC_CODE=${{ vars.CODERAY_PC_CODE }} \
-              -e ACC_CODE=${{ vars.CODERAY_ACC_CODE }} \
+              --name coderay-openapi \
+              -e SERVICE_NAME=${{ env.SERVICE_NAME }} \
+              -e ACCESS_KEY=${{ env.ACCESS_KEY }} \
+              -e SECRET_KEY=${{ env.SECRET_KEY }} \
+              -e PC_CODE=${{ env.PC_CODE }} \
+              -e ACC_CODE=${{ env.ACC_CODE }} \
               -e SRC_URL=${{ github.server_url }}/${{ github.repository }} \
               -e REV=${{ github.event.inputs.environment || github.ref_name }} \
-              ${{ vars.CODERAY_IMAGE_NAME }}
-
-        - name: Deploy
-          run: |
-            echo "Deploy Stage"
-            echo "배포 수행"
-  ```
-
-#### 4-2. `Jar` 이용 예제 (GitActions workflow 이용)
->
-> 기존의 workflow.yml 파일 내용에서 `Coderay 분석 단계`만 추가하면 됩니다. \
-> Github Actions **variable 및 secret**을 이용한 예제입니다. \
-> workflow 구성은 각 프로젝트에 맞게 만들면 됩니다. (Job 또는 Step 구성)
-
-- 아래는 Step 구성으로 호출한 샘플 입니다.
-- 체크아웃-빌드-**코드레이JAR다운로드-코드레이분석요청**-배포)
-
-  ```yml
-  jobs:
-    build:
+              ${{ env.CODERAY_IMAGE_PATH }}
+              
+    # define your build job
+    deploy:
+      needs: [build, SAST_coderay]
       runs-on:
-        group: organization/internal-runner-linux
+        group: default
       steps:
-        - name: Checkout
-          uses: actions/checkout@v3
-
-        - name: Build
-          run: |
-            echo "===== Build Stage ====="
-            echo "빌드 수행"
-        
-        - name: 코드레이 JAR 다운로드
-          run: |
-            curl -L -O \
-              https://github.com/skccmygit/skax-coderay-guide/releases/download/latest/coderay-open-api.jar
-            
-        - name: 코드레이 분석 요청
-          run: |
-            java -jar coderay-open-api.jar \
-              --SERVICE_NAME=${{ vars.CODERAY_SERVICE_NAME }} \
-              --ACCESS_KEY=${{ vars.CODERAY_ACCESS_KEY }} \
-              --SECRET_KEY=${{ vars.CODERAY_SECRET_KEY }} \
-              --ACC_CODE=${{ vars.CODERAY_ACC_CODE }} \
-              --PC_CODE=${{ vars.CODERAY_PC_CODE }} \
-              --SRC_URL=${{ github.server_url }}/${{ github.repository }} \
-              --REV=refs/heads/${{ github.event.inputs.environment || github.ref_name }} \
-            echo "Coderay 상세 결과는 https://skax.coderay.co.kr:28443 에서 확인하세요"
-
-        - name: Deploy
+        - name: Deploy To Production
           run: |
             echo "Deploy Stage"
-            echo "배포 수행"
+            echo "배포 수행 로직을 여기에 ...."
   ```
 
 ### 5. 코드레이 사이트에서 결과 확인
@@ -210,3 +194,12 @@ Jar|<https://github.com/skccmygit/skax-coderay-guide/releases/download/latest/co
 ## ZCP 환경에서의 코드레이 사용가이드
 
 - [ZCP_Coderay_연계_가이드.pdf](./ZCP_Coderay_연계_가이드.pdf)
+
+
+## 기타
+- 다음과 같이 에러가 나오는 경우
+![error](./images/coderay_error1.png)
+  
+  1. 깃허브 repository 및 branch 명칭을 우선 확인하고 문제가 없다면...
+  2. ACC_CODE(형상인증 Key)가 잘못 입력되었거나 ACC_CODE 발급시 사용한 토큰이 만료된 경우이므로 코드레이 웹화면에서 ACC_CODE를 다시 발급받아 적용해본다.
+  

@@ -1,0 +1,67 @@
+name: SAST SAMPLE
+
+on:
+  workflow_dispatch:   # 수동 실행
+   
+env:
+  SERVICE_NAME: GithubActions
+  PC_CODE: ${{ vars.CODERAY_PC_CODE }}
+  ACC_CODE: ${{ vars.CODERAY_ACC_CODE }}
+  ACCESS_KEY: ${{ secrets.CODERAY_ACCESS_KEY }}   
+  SECRET_KEY: ${{ secrets.CODERAY_SECRET_KEY }} 
+  CODERAY_IMAGE_PATH: ${{ vars.CODERAY_IMAGE_PATH }}
+  # CODERAY_IMAGE_PATH is organization level variable, you DON'T NEED to set it in vars section of your repository settings.
+
+jobs:
+  # define your build job
+  build:
+    runs-on:
+      group: default
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v3
+
+      - name: Build
+        run: |
+          echo "===== Build Stage ====="
+          echo "빌드 수행 로직을 여기에 ...."
+
+  # Do not modify below this this job        
+  SAST_coderay:
+    runs-on:
+      group: skax-coderay
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v3
+
+      - name: Build
+        run: |
+          echo "===== Build Stage ====="
+          echo "빌드 수행"
+      
+      - name: Coderay Docker Image Pull
+        run: docker pull ${{ env.CODERAY_IMAGE_PATH }}
+      - name: Coderay Scan
+        run: |
+          docker run --rm \
+            --name coderay-openapi \
+            -e SERVICE_NAME=${{ env.SERVICE_NAME }} \
+            -e ACCESS_KEY=${{ env.ACCESS_KEY }} \
+            -e SECRET_KEY=${{ env.SECRET_KEY }} \
+            -e PC_CODE=${{ env.PC_CODE }} \
+            -e ACC_CODE=${{ env.ACC_CODE }} \
+            -e SRC_URL=${{ github.server_url }}/${{ github.repository }} \
+            -e REV=${{ github.event.inputs.environment || github.ref_name }} \
+            ${{ env.CODERAY_IMAGE_PATH }}
+            
+  # define your build job
+  deploy:
+    needs: [build, SAST_coderay]
+    runs-on:
+      group: default
+    steps:
+      - name: Deploy To Production
+        run: |
+          echo "Deploy Stage"
+          echo "배포 수행 로직을 여기에 ...."
+
