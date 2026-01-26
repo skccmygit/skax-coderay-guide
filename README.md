@@ -100,7 +100,7 @@ Jar|<https://github.com/skccmygit/skax-coderay-guide/releases/download/latest/co
     # define your build job
     build:
       runs-on:
-        group: default
+        # define your job runner
       steps:
         - name: Checkout
           uses: actions/checkout@v3
@@ -142,7 +142,7 @@ Jar|<https://github.com/skccmygit/skax-coderay-guide/releases/download/latest/co
     deploy:
       needs: [build, SAST_coderay]
       runs-on:
-        group: default
+        # define your job runner
       steps:
         - name: Deploy To Production
           run: |
@@ -202,4 +202,4 @@ Jar|<https://github.com/skccmygit/skax-coderay-guide/releases/download/latest/co
   
   1. 깃허브 repository 및 branch 명칭을 우선 확인하고 문제가 없다면...
   2. ACC_CODE(형상인증 Key)가 잘못 입력되었거나 ACC_CODE 발급시 사용한 토큰이 만료된 경우이므로 코드레이 웹화면에서 ACC_CODE를 다시 발급받아 적용해본다.
-  
+
