@@ -9,6 +9,7 @@ env:
   ACC_CODE: ${{ vars.CODERAY_ACC_CODE }}
   ACCESS_KEY: ${{ secrets.CODERAY_ACCESS_KEY }}   
   SECRET_KEY: ${{ secrets.CODERAY_SECRET_KEY }} 
+  CODERAY_ACTIVE_YN: ${{ vars.CODERAY_ACTIVE_YN }} 
   CODERAY_IMAGE_PATH: ${{ vars.CODERAY_IMAGE_PATH }}
   # CODERAY_IMAGE_PATH is organization level variable, you DON'T NEED to set it in vars section of your repository settings.
 
@@ -28,6 +29,7 @@ jobs:
 
   # Do not modify below this this job        
   SAST_coderay:
+    if: ${{ vars.CODERAY_ACTIVE_YN == 'Y' }}
     runs-on:
       group: skax-coderay
     steps:
@@ -49,6 +51,7 @@ jobs:
   # define your build job
   deploy:
     needs: [build, SAST_coderay]
+    if: ${{ always() && needs.build.result == 'success' && (needs.SAST_coderay.result == 'success' || needs.SAST_coderay.result == 'skipped') }}
     runs-on:
       group: default
     steps:
