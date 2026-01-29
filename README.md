@@ -95,7 +95,7 @@ Jar|<https://github.com/skccmygit/skax-coderay-guide/releases/download/latest/co
     ACCESS_KEY: ${{ secrets.CODERAY_ACCESS_KEY }}   
     SECRET_KEY: ${{ secrets.CODERAY_SECRET_KEY }} 
     CODERAY_IMAGE_PATH: ${{ vars.CODERAY_IMAGE_PATH }}
-
+    CODERAY_ACTIVE_YN: ${{ vars.CODERAY_ACTIVE_YN }} 
   jobs:
     # define your build job
     build:
