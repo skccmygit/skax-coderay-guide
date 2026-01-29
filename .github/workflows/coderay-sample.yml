@@ -9,10 +9,10 @@ env:
   ACC_CODE: ${{ vars.CODERAY_ACC_CODE }}
   ACCESS_KEY: ${{ secrets.CODERAY_ACCESS_KEY }}   
   SECRET_KEY: ${{ secrets.CODERAY_SECRET_KEY }} 
+  # below CODERAY_XXXX are organization level variables, you DON'T NEED to set it in vars section of your repository settings.
   CODERAY_IMAGE_PATH: ${{ vars.CODERAY_IMAGE_PATH }}
   CODERAY_ACTIVE_YN: ${{ vars.CODERAY_ACTIVE_YN }}
-  # CODERAY_XXXX are organization level variables, you DON'T NEED to set it in vars section of your repository settings.
-
+  
 jobs:
   # define your build job
   build:
