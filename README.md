@@ -155,7 +155,7 @@ Jar|<https://github.com/skccmygit/skax-coderay-guide/releases/download/latest/co
 
   | 환경변수명 | 필수여부 | 설명 | 기본값 |
   |--------|--------|------|------|
-  | **SERVICE_NAME** | **필수** | OpenAPI 생성시 선택한 빌드 플랫폼명 | |
+  | **SERVICE_NAME** | **필수** | OpenAPI 생성시 선택한 빌드 플랫폼명 (GithubActions, CodeBuild, ZCP 중 선택입력 ) | |
   | **ACCESS_KEY** | **필수** | OpenAPI 생성시 취득한 Access Key | |
   | **SECRET_KEY** | **필수** | OpenAPI 생성시 취득한 Secret Key | |
   | **PC_CODE** | **필수** | 코드레이 프로젝트 코드 | |
@@ -188,10 +188,26 @@ Jar|<https://github.com/skccmygit/skax-coderay-guide/releases/download/latest/co
 - [ZCP_Coderay_연계_가이드.pdf](./ZCP_Coderay_연계_가이드.pdf)
 
 
-## 기타
-- 다음과 같이 에러가 나오는 경우
+## 코드레이 호출 에러
+- 코드레이 호출시 필수 파라미터 중 특히 ACCESS_KEY 가 잘못 입력된 경우
+``` # ACCESS_KEY 오류
+[2026-02-05 15:51:06:529][main] INFO  c.coderay.openapi.CodeRayCLI - Executing analysis...
+[2026-02-05 15:51:08:2537][main] INFO  c.coderay.openapi.CodeRayCLI - src_execute response: {errMsg=Wrong ACCESS_KEY}
+[2026-02-05 15:51:08:2546][main] INFO  c.coderay.openapi.CodeRayCLI - srcExecute returned an error. Status = null. Aborting.
+[2026-02-05 15:51:08:2546][main] INFO  c.coderay.openapi.CodeRayCLI - ERROR
+```
+
+- 코드레이 호출시 필수 파라미터 중 특히 SECRET_KEY 가 잘못 입력된 경우
+``` # SECRET_KEY 오류
+[2026-02-05 15:41:18:440][main] INFO  c.coderay.openapi.CodeRayCLI - Executing analysis...
+[2026-02-05 15:41:20:2450][main] INFO  c.coderay.openapi.CodeRayCLI - src_execute response: {"msg":"ETC ERROR","detailMsg":"INVALID CREDENTIALS","status":"ERROR"}
+[2026-02-05 15:41:20:2459][main] INFO  c.coderay.openapi.CodeRayCLI - srcExecute returned an error. Status = ERROR. Aborting.
+[2026-02-05 15:41:20:2459][main] INFO  c.coderay.openapi.CodeRayCLI - ERROR
+```
+
+-  그 외 깃허브 repository 및 branch 명칭이 잘못 지정된 경우
 ![error](./images/coderay_error1.png)
   
-  1. 깃허브 repository 및 branch 명칭을 우선 확인하고 문제가 없다면...
-  2. ACC_CODE(형상인증 Key)가 잘못 입력되었거나 ACC_CODE 발급시 사용한 토큰이 만료된 경우이므로 코드레이 웹화면에서 ACC_CODE를 다시 발급받아 적용해본다.
+  - 만약 깃허브 repository 및 branch 명칭을 우선 확인하고 문제가 없다면...
+  -  ACC_CODE(형상인증 Key)가 잘못 입력되었거나 ACC_CODE 발급시 사용한 토큰이 만료된 경우이므로 코드레이 웹화면에서 ACC_CODE를 다시 발급받아 적용해본다.
 
